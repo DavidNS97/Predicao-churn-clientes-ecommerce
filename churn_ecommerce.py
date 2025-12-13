@@ -229,6 +229,8 @@ df_oot  = df_oot.drop(columns=["ID do Cliente"])
 
 
 # Identifica colunas com missing (apenas colunas numericas possui missing)
+numericas = X_train.select_dtypes(include=['int64', 'float64']).columns
+
 colunas_numericas_com_missing = (
     X_train[numericas]
     .columns[X_train[numericas].isna().sum() > 0]
