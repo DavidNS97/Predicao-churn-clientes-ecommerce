@@ -254,7 +254,7 @@ df_oot[colunas_numericas_com_missing] = imputer.transform(
 )
 
 # ============================================================
-# 15. One-Hot Encoding das variáveis categóricas
+# 15. Dummies Encoding das variáveis categóricas
 # ============================================================
 
 X_train = pd.get_dummies(X_train, columns=categoricas, drop_first=False)
