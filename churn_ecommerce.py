@@ -542,22 +542,29 @@ print("AUC OOT:", auc_oot)
 # Importância das features — Regressão Logística
 # ------------------------------------------------------------
 
-
 # Melhor modelo encontrado no grid
 best_log_model = log_pipeline.named_steps["Grid"].best_estimator_
-
+# %%
 # Coeficientes do modelo
 coef = best_log_model.coef_[0]
 
+# Gera a  features final (bins + dummies) exatamente como o modelo enxerga
+X_transformado = log_pipeline[:-1].transform(X_train[best_features])
+
+# Nomes das features finais
+feature_names = X_transformado.columns
+
+# Checagem de segurança
+assert len(feature_names) == len(coef), "Mismatch entre features e coeficientes"
+
 # Organização das importâncias
 importancia_features = pd.DataFrame({
-    "feature": features,
+    "feature": feature_names,
     "coeficiente": coef,
     "importancia_absoluta": np.abs(coef)
 }).sort_values("importancia_absoluta", ascending=False)
 
 importancia_features
-
 
 # %%
 # ============================================================
