@@ -67,7 +67,7 @@ Este aplicativo utiliza **Machine Learning** para estimar a probabilidade de chu
 Com base no nivel de risco, aplicamos **regras de negócio** para sugerir ações práticas de retenção.
 
 🔎 **Saiba mais sobre o projeto:**  
-[Explicação completa do código](https://www.linkedin.com/in/davidnunes9/)  
+[Explicação completa do código](https://github.com/DavidNS97/Predicao-churn-clientes-ecommerce)  
 
 💼 **Conecte-se comigo:**  
 [LinkedIn](https://www.linkedin.com/in/davidnunes9/)
