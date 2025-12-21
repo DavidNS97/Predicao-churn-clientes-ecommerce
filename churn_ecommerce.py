@@ -304,11 +304,14 @@ best_features
 
 # %%
 # ============================================================
-# ETAPA 19 — Discretização (Binning) das Variáveis Numéricas
+# ETAPA 19 — PRÉ-PROCESSAMENTO PARA RANDOM FOREST
 # ============================================================
-# Discretiza variáveis numéricas relevantes usando árvore de decisão,
-# reduzindo sensibilidade a outliers e capturando padrões não lineares.
-
+# Discretização supervisionada + OneHot
+# ------------------------------------------------------------
+# Aqui tratamos variáveis numéricas relevantes usando árvore de decisão
+# para discretização, reduzindo sensibilidade a outliers e capturando
+# padrões não lineares.
+# ------------------------------------------------------------
 
 # ------------------------------------------------------------
 # Seleção das variáveis numéricas mais relevantes
@@ -346,9 +349,8 @@ onehot = encoding.OneHotEncoder(
 # %%
 
 # ------------------------------------------------------------
-# Definição do modelo e hiperparâmetros
+# Definição do modelo Random Forest
 # ------------------------------------------------------------
-
 
 model = ensemble.RandomForestClassifier(
             random_state=42,
@@ -385,6 +387,10 @@ model_pipeline = pipeline.Pipeline(
     ]
 )
 
+# ------------------------------------------------------------
+#Treinamento do Pipeline com Random Forest  + (Discretização + OneHot + GridSearchCV)
+# ------------------------------------------------------------
+
 model_pipeline.fit(X_train[best_features], y_train)
 
 # ------------------------------------------------------------
@@ -402,7 +408,7 @@ print(grid.best_params_)
 
 
 # ------------------------------------------------------------
-# Definição do modelo
+# Definição do modelo regressão logistica
 # ------------------------------------------------------------
 
 log_model = linear_model.LogisticRegression(
