@@ -105,18 +105,41 @@ Antes da criação dessas variáveis derivadas, o modelo apresentava **acurácia
 Após a inclusão das novas features, houve um ganho significativo de desempenho, mostrando que o *feature engineering* foi decisivo para melhorar a capacidade preditiva.
 
 
-## Estratégia de Validação Out-of-Time (OOT)
+## Análise Exploratória dos Dados (EDA)
+- Balanceamento da variável alvo
+- Estatísticas descritivas (numéricas e categóricas)
+- Matriz de correlação
 
+
+## Estratégia de Validação
+- Separação Out-of-Time (OOT)
+- Definição de Features e Target
+- Split Treino / Teste
+- 
 ## Preparação para Modelagem
+- Imputação de valores ausentes
+- Criação de variáveis dummy
+- Padronização do dataset final
 
-## Seleção de Features
+## Seleção das Melhores Features
+- Árvore de decisão
+- Corte em 95% de importância acumulada
 
 ## Modelagem
+- Random Forest
+- Regressão Logística
 
 ## Avaliação dos Modelos
+- Acurácia
+- ROC AUC
+- Curva ROC
+- Avaliação em treino, teste e OOT
 
 ## Serialização do Modelo
+- Salvamento do modelo
+- Salvamento das features
 
 ## Aplicação Prática (Streamlit)
+(Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
