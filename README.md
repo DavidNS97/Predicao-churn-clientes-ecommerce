@@ -104,17 +104,49 @@ Uma soma (+0.1) foi utilizado nas divisões para evitar erros de divisão por ze
 Antes da criação dessas variáveis derivadas, o modelo apresentava **acurácia abaixo de 50%**.  
 Após a inclusão das novas features, houve um ganho significativo de desempenho, mostrando que o *feature engineering* foi decisivo para melhorar a capacidade preditiva.
 
+## 5. Estratégia de Validação
+
+Para garantir que o modelo fosse avaliado de forma robusta, adotamos uma estratégia de validação em múltiplos níveis:
+
+### 6.1 Separação Out-of-Time (OOT)
+- Objetivo: avaliar se o modelo mantém desempenho em cenários fora do período de treino e teste, ou seja, num cenario real, ao receber dados novos o modelo será testado se é capaz de lidar com dados diferentes do passado.
+- Como o dataset não possui uma coluna de data, utilizamos **Tempo de Relacionamento** como proxy temporal.  
+- Clientes mais recentes (quartil inferior de tempo de relacionamento) foram separados como conjunto **OOT**, simulando clientes novos.  
+
+### 6.2 Definição de Features e Target
+- **Target:** `Churn` (indicador de saída do cliente).  
+- **Features:** todas as demais variáveis inclusive as criadas na feature engineering.  
+
+### 6.3 Split Treino / Teste
+- O conjunto de treino foi dividido da base que sobrou em **treino (80%)** e **teste (20%)**.  
+- Utilizamos **estratificação** para manter a taxa de churn equivalente entre os conjuntos.  
+- Isso garante que a proporção de clientes churn vs não churn seja preservada.
+
+### 6.4 Verificação de Balanceamento
+Após realizar o split entre treino e teste, verificamos se a taxa de churn permaneceu equivalente nos diferentes conjuntos.  
+Isso é importante porque:
+
+- **Evita viés**: se o treino tivesse muito mais casos de churn que o teste (ou vice‑versa), o modelo poderia aprender padrões artificiais.  
+- **Valida a estratificação**: confirma que a divisão preservou a distribuição da variável alvo assegurando que o modelo seja avaliado em condições próximas às reais.
+
+Resultados:
+- Taxa de churn geral: ~5,79%  
+- Taxa de churn treino: ~5,81%  
+- Taxa de churn teste: ~5,74%
+  
+As taxas são praticamente iguais, mostrando que o split foi bem sucedido e que o modelo será treinado e avaliado em bases comparáveis.
+
+
+### Esquema Visual
+Um diagrama simples ajuda a entender a separação:
+
+
 
 ## Análise Exploratória dos Dados (EDA)
-- Balanceamento da variável alvo
 - Estatísticas descritivas (numéricas e categóricas)
 - Matriz de correlação
 
 
-## Estratégia de Validação
-- Separação Out-of-Time (OOT)
-- Definição de Features e Target
-- Split Treino / Teste
 - 
 ## Preparação para Modelagem
 - Imputação de valores ausentes
@@ -143,3 +175,4 @@ Após a inclusão das novas features, houve um ganho significativo de desempenho
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
