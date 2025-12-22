@@ -15,6 +15,7 @@ from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import ensemble
 import numpy as np
+from sklearn import model_selection 
 
 
 # Configurações de visualização para análise exploratória
@@ -119,7 +120,6 @@ y = df_train[target]
 # Divisão com estratificação para manter a taxa de churn
 # equivalente entre treino e teste.
 
-from sklearn import model_selection 
 X_train, X_test, y_train, y_test = model_selection.train_test_split(
                                                                     X, y,
                                                                     random_state=42, 
