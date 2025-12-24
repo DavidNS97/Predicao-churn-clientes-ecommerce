@@ -108,21 +108,21 @@ Após a inclusão das novas features, houve um ganho significativo de desempenho
 
 Para garantir que o modelo fosse avaliado de forma robusta, adotamos uma estratégia de validação em múltiplos níveis:
 
-### 6.1 Separação Out-of-Time (OOT)
+### 5.1 Separação Out-of-Time (OOT)
 - Objetivo: avaliar se o modelo mantém desempenho em cenários fora do período de treino e teste, ou seja, num cenario real, ao receber dados novos o modelo será testado se é capaz de lidar com dados diferentes do passado.
 - Como o dataset não possui uma coluna de data, utilizamos **Tempo de Relacionamento** como proxy temporal.  
 - Clientes mais recentes (quartil inferior de tempo de relacionamento) foram separados como conjunto **OOT**, simulando clientes novos.  
 
-### 6.2 Definição de Features e Target
+### 5.2 Definição de Features e Target
 - **Target:** `Churn` (indicador de saída do cliente).  
 - **Features:** todas as demais variáveis inclusive as criadas na feature engineering.  
 
-### 6.3 Split Treino / Teste
+### 5.3 Split Treino / Teste
 - O conjunto de treino foi dividido da base que sobrou em **treino (80%)** e **teste (20%)**.  
 - Utilizamos **estratificação** para manter a taxa de churn equivalente entre os conjuntos.  
 - Isso garante que a proporção de clientes churn vs não churn seja preservada.
 
-### 6.4 Verificação de Balanceamento
+### 5.4 Verificação de Balanceamento
 Após realizar o split entre treino e teste, verificamos se a taxa de churn permaneceu equivalente nos diferentes conjuntos.  
 Isso é importante porque:
 
@@ -142,13 +142,60 @@ Um diagrama simples ajuda a entender a separação:
 
 
 
-## Análise Exploratória dos Dados (EDA)
-- Estatísticas descritivas (numéricas e categóricas)
-- Matriz de correlação
+## 6. Análise Exploratória dos Dados (EDA)
+
+Nesta etapa foram realizadas análises estatísticas e visuais para compreender melhor o comportamento das variáveis e sua relação com o churn.
+
+### 6.1 Estatísticas Descritivas — Variáveis Numéricas
+- Média e mediana calculadas por classe (`Churn` vs `Não Churn`).
+- Criada a métrica **diff_rel** para identificar variáveis mais discriminativas.
+
+O grafico de barras abaixo mostra as principais variáveis numéricas com suas média por classe de churn e a razão relativa (`diff_rel`).
+Valores maiores que 1 indicam que a variável tende a ser maior em clientes **não churn**, enquanto valores menores que 1 indicam maior associação com **churn**.
 
 
+
+
+**Insights principais:**
+- Clientes churn tendem a ter **menos dias desde o último pedido** e **menor tempo de relacionamento**.
+- Variáveis como **insatisfação recente**, **número de endereços** e **rf_score** aparecem mais altas em clientes churn.
+- O uso de **cupons** também é relativamente maior em churners.
+  
+### 6.2 Matriz de Correlação — Variáveis Numéricas
+- Objetivo: identificar relações fortes e possíveis redundâncias.
+
+IMAGEM
+
+
+**Insights principais da correlação:**
+- Algumas variáveis apresentam alta correlação entre si (ex.: Quantidade de Pedidos e Pedidos por Ano), indicando redundância.  
+- Variáveis como **Insatisfação Recente** e **Dias Desde Último Pedido** têm correlação mais baixa com as demais features, sugerindo maior poder explicativo isolado para churn.  
+
+### 6.3 Estatísticas Descritivas — Variáveis Categóricas
+- Para cada variável categórica, calculada a proporção de churn e não churn.
+- Criada a métrica **diff_rel** para medir poder discriminativo relativo.
+
+| Variável                        | Categoria              | %Não Churn | %Churn | diff_rel |
+|---------------------------------|------------------------|------------|--------|----------|
+| Dispositivo de Login Preferido  | Computer               | 93.69      | 6.31   | 0.07     |
+| Dispositivo de Login Preferido  | Mobile Phone           | 94.20      | 5.80   | 0.06     |
+| Nível da Cidade                 | 3                      | 90.50      | 9.50   | 0.10     |
+| Nível da Cidade                 | 2                      | 97.76      | 2.24   | 0.02     |
+| Método de Pagamento Preferido   | E-wallet               | 89.01      | 10.99  | 0.12     |
+| Método de Pagamento Preferido   | UPI                    | 98.30      | 1.70   | 0.02     |
+| Categoria de Pedido Preferida   | Fashion                | 90.91      | 9.09   | 0.10     |
+| Categoria de Pedido Preferida   | Grocery                | 95.87      | 4.13   | 0.04     |
+| Estado Civil                    | Single                 | 91.12      | 8.88   | 0.10     |
+| Estado Civil                    | Married                | 95.64      | 4.36   | 0.05     |
+| Reclamação                      | True                   | 87.70      | 12.30  | 0.14     |
+| Reclamação                      | False                  | 96.58      | 3.42   | 0.04     |
+
+**Insights principais:**
+- **Maior churn** em clientes com **reclamações**, que usam **E-wallet**,  e compram **Fashion/Mobile**.  
+- **Menor churn** em clientes que usam **UPI**, compram **Laptop & Accessory** e não registram reclamações.
 - 
 ## Preparação para Modelagem
+- Remoção de variaveis que não agrega
 - Imputação de valores ausentes
 - Criação de variáveis dummy
 - Padronização do dataset final
@@ -175,4 +222,5 @@ Um diagrama simples ajuda a entender a separação:
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
 
