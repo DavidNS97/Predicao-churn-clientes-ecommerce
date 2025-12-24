@@ -8,7 +8,7 @@
 
 Este projeto apresenta uma solução completa de **predição de churn de clientes em e-commerce**, utilizando técnicas de **Machine Learning** aplicadas a dados comportamentais e transacionais.
 
-**Churn** refere-se ao cancelamento ou abandono do cliente, ou seja, quando um cliente deixa de comprar ou se relacionar com a empresa. Antecipar esse comportamento permite agir de forma proativa para aumentar retenção e reduzir perdas de receita.
+**Churn** trata-se de cancelamento ou abandono do cliente, ou seja, quando um cliente deixa de comprar ou se relacionar com a empresa. Antecipar esse comportamento permite agir de forma proativa para aumentar retenção e reduzir perdas de receita.
 
 O objetivo da solução é estimar a **probabilidade de churn de cada cliente** e para além da análise, disponibilizar essa informação de forma prática, permitindo a execução de ações de retenção com base em diferentes níveis de risco.
 
@@ -137,8 +137,7 @@ Resultados:
 As taxas são praticamente iguais, mostrando que o split foi bem sucedido e que o modelo será treinado e avaliado em bases comparáveis.
 
 
-### Esquema Visual
-Um diagrama simples ajuda a entender a separação:
+#### Fluxograma separação dos dados
 
 
 
@@ -193,12 +192,25 @@ IMAGEM
 **Insights principais:**
 - **Maior churn** em clientes com **reclamações**, que usam **E-wallet**,  e compram **Fashion/Mobile**.  
 - **Menor churn** em clientes que usam **UPI**, compram **Laptop & Accessory** e não registram reclamações.
-- 
-## Preparação para Modelagem
-- Remoção de variaveis que não agrega
-- Imputação de valores ausentes
-- Criação de variáveis dummy
-- Padronização do dataset final
+
+
+## 7. Preparação para Modelagem
+
+### 7.1 Remoção de variáveis irrelevantes
+- A coluna **ID do Cliente** foi removida dos conjuntos de treino, teste e OOT por se tratar de  apenas de um identificador único, sem poder preditivo, e poderia induzir o modelo a padrões artificiais.
+
+### 7.2 Imputação de valores ausentes
+-Após identificar as variáveis com valores faltantes na etapa de "Preparação dos Dados" chegou a hora de tratar esses valores nulos, pois não são aceitos nos principais algoritmos de ML
+- Apenas colunas **numéricas** apresentavam valores faltantes.  
+- Foi utilizada a **mediana** para imputação, pois é sólida contra outliers, ou seja, valores extremos não distorcem o preenchimento e preserva a distribuição das variáveis numéricas.
+- O calculo foi  feito considerando  **apenas no conjunto de treino** para evitar vazamento de informação ja que o modelo de teste e OOT são dados "novos", e considerar-los poderia enviesar o modelo.
+- A transformação foi aplicada posteriormente nos conjuntos de teste e OOT.
+
+### 7.3 Codificação de variáveis categóricas
+- As variáveis categóricas foram convertidas em **dummies (one-hot encoding)** para que o modelo consiga interpretar corretamente categorias não numéricas. Esse processo evita que o algoritmo crie relações artificiais entre categorias (como se houvesse uma ordem entre elas) e garante que cada categoria seja representada de forma independente em colunas binárias (0/1). 
+- Após a codificação, os conjuntos de treino, teste e OOT foram **reindexados** para garantir que todos possuíssem as mesmas colunas para garantir consistência estrutural e comparabilidade, para que assim o modelo consiga aplicar o mesmo raciocínio em qualquer dado novo.
+
+#### Fluxograma da preparação dos dados
 
 ## Seleção das Melhores Features
 - Árvore de decisão
@@ -222,5 +234,6 @@ IMAGEM
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
 
 
