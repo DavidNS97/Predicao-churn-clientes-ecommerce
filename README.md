@@ -212,9 +212,26 @@ IMAGEM
 
 #### Fluxograma da preparação dos dados
 
-## Seleção das Melhores Features
-- Árvore de decisão
-- Corte em 95% de importância acumulada
+## 8. Seleção das Melhores Features
+
+Após a preparação dos dados, foi necessário selecionar as variáveis mais relevantes para o modelo de churn.  Essa etapa é importante pois é nela que reduz a dimensionalidade dos dados para manter apenas variáveis que realmente contribuem para a previsão.
+Embora a **Análise Exploratória (EDA)** seja útil para identificar correlações e padrões, ela não captura totalmente a **importância preditiva** das variáveis.  
+
+Por isso, gosto de  utilizar  **árvore de decisão** para calcular a importância das features.  
+Esse método tem como vantagens:
+- Considera interações não lineares entre variáveis.  
+- Avalia o impacto direto de cada feature na redução da impureza dos nós da árvore.  
+- É mais completo que apenas observar correlações, já que algumas variáveis podem ser pouco correlacionadas isoladamente, mas altamente relevantes em conjunto.  
+
+### Processo
+1. Calculamos a importância de cada variável com base no modelo de árvore nos dados de **TREINO**.  
+2. Ordenamos as features por importância.  
+3. Criamos uma coluna de **importância acumulada**.  
+4. Selecionamos as variáveis responsáveis por **95% da importância total**.  
+
+### Resultado
+As variáveis selecionadas (best_features) representam o subconjunto mais relevante para explicar o churn, .
+
 
 ## Modelagem
 - Random Forest
@@ -234,6 +251,7 @@ IMAGEM
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
 
 
 
