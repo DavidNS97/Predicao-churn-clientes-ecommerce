@@ -257,10 +257,7 @@ O modelo final foi treinado com os **melhores parâmetros encontrados**, garanti
 Foi criado um **pipeline** integrando o modelo Random Forest com o GridSearchCV, garantindo organização e reprodutibilidade do processo de treinamento.
 
 ### Treinamento
-O pipeline foi ajustado nos dados de treino  
-utilizando tanto as **variáveis mais relevantes selecionadas na etapa de Seleção das Melhores Features** 
-quanto os **parâmetros otimizados pelo GridSearchCV**, garantindo que o modelo final 
-fosse treinado com a melhor configuração encontrada.
+O pipeline foi aplicado nos dados de treino, utilizando as **best_features** e os **parâmetros otimizados** pelo GridSearchCV.
 
 ## 10 Regressão Logística
 
@@ -288,7 +285,7 @@ Foi criado um **pipeline completo**, integrando:
 3. GridSearchCV com regressão logística  
 
 ### Treinamento
-O pipeline foi ajustado nos dados de treino, incluindo a discretização supervisionada das variáveis numéricas contínuas transformadas em variáveis categóricas binarias e a otimização de parâmetros pelo GridSearchCV, utilizando tanto as variáveis mais relevantes selecionadas quanto os parâmetros otimizados.
+O pipeline foi aplicado nos dados de treino, utilizando as **best_features** e os **parâmetros otimizados** pelo GridSearchCV.
 
 ## Avaliação dos Modelos
 - Acurácia
@@ -304,6 +301,7 @@ O pipeline foi ajustado nos dados de treino, incluindo a discretização supervi
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
 
 
 
