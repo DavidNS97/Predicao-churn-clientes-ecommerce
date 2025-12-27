@@ -233,9 +233,62 @@ Esse método tem como vantagens:
 As variáveis selecionadas (best_features) representam o subconjunto mais relevante para explicar o churn, .
 
 
-## Modelagem
-- Random Forest
-- Regressão Logística
+## 9 Random Forest
+
+O algoritmo **Random Forest** foi testado pela sua  capacidade de lidar com variáveis numéricas e categóricas, além de  combinar resultados de múltiplas árvores de decisão para produzir previsões mais estáveis e generalizáveis
+Para garantir o melhor desempenho, aplicamos uma busca sistemática de parâmetros (GridSearchCV).
+
+### O que foi feito
+- Definimos um conjunto de **parâmetros candidatos** (como número de árvores, tamanho mínimo das folhas e critério de divisão).
+- O **GridSearchCV** testou todas as combinações possíveis desses parâmetros.
+- Cada combinação foi avaliada com **validação cruzada (cv=3)** usando a métrica **ROC AUC**.
+- O processo escolheu automaticamente a configuração que apresentou o melhor resultado.
+
+### Parâmetros testados
+Foram avaliadas diferentes combinações de parâmetros para encontrar o melhor equilíbrio entre **complexidade do modelo** e **capacidade de generalização**:
+- `min_samples_leaf`: [15, 20, 25, 30, 50]     - Relacionado ao número mínimo de amostras necessárias para que um nó folha seja criado
+- `n_estimators`: [100, 200, 500, 1000]        - Relacionado ao número de modelos individuais (árvores de decisão) que serão construídos
+- `criterion`: ['gini', 'entropy', 'log_loss'] - Define  a função de avaliação usada para escolher os melhores splits nas árvores.
+
+### Resultado
+O modelo final foi treinado com os **melhores parâmetros encontrados**, garantindo maior capacidade preditiva e menor risco de overfitting.
+
+### Pipeline
+Foi criado um **pipeline** integrando o modelo Random Forest com o GridSearchCV, garantindo organização e reprodutibilidade do processo de treinamento.
+
+### Treinamento
+O pipeline foi ajustado nos dados de treino  
+utilizando tanto as **variáveis mais relevantes selecionadas na etapa de Seleção das Melhores Features** 
+quanto os **parâmetros otimizados pelo GridSearchCV**, garantindo que o modelo final 
+fosse treinado com a melhor configuração encontrada.
+
+## 10 Regressão Logística
+
+A **Regressão Logística** foi utilizada como modelo baseline por sua simplicidade e interpretabilidade ( esse modelo em especifico, pude estudar muito no periodo da faculdade)
+Assim como na Random Forest, aplicamos a  otimização de parâmetros e para melhorar a representação das variáveis contínuas, aplicamos etapas de discretização, algo que não é necessário na arvore de decisao.
+
+### O que foi feito
+
+- **Discretização supervisionada:** as variáveis numéricas contínuas foram transformadas em bins (intervalos) usando árvores de decisão.  
+  Essa técnica divide os valores em faixas que ajudam o modelo a aprender melhor, permitindo capturar padrões não lineares, reduzir o impacto de outliers e facilitar a interpretação.  
+  - Sem a discretização, o modelo perdeu aproximadamente **22% de poder discriminativo (AUC)** e **15% de acurácia no OOT**.
+- **One-Hot Encoding:** os bins resultantes foram convertidos em variáveis categóricas binárias.  
+  Essa etapa é importante porque evita que os intervalos sejam interpretados como valores numéricos contínuos, garantindo que cada faixa seja tratada como uma categoria independente.  
+- O GridSearchCV  testou todas as combinações possíveis dos  parâmetros selecionados 
+- Cada combinação foi avaliada com **validação cruzada (cv=3)** usando **ROC AUC**, e selecionamos automaticamente a configuração com melhor desempenho.
+
+### Parâmetros testados
+- `penalty`: ["l1", "l2"] - tipo de regularização aplicada.  
+- `C`: [0.01, 0.1, 1, 10, 100] - controla a força da regularização (valores menores = regularização mais forte).  
+
+### Pipeline
+Foi criado um **pipeline completo**, integrando:
+1. Discretização supervisionada  
+2. One-Hot Encoding  
+3. GridSearchCV com regressão logística  
+
+### Treinamento
+O pipeline foi ajustado nos dados de treino, incluindo a discretização supervisionada das variáveis numéricas contínuas transformadas em variáveis categóricas binarias e a otimização de parâmetros pelo GridSearchCV, utilizando tanto as variáveis mais relevantes selecionadas quanto os parâmetros otimizados.
 
 ## Avaliação dos Modelos
 - Acurácia
@@ -251,6 +304,7 @@ As variáveis selecionadas (best_features) representam o subconjunto mais releva
 (Como o modelo é utilizado na prática)
 
 ## Tecnologias Utilizadas
+
 
 
 
