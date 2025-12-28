@@ -287,20 +287,124 @@ Foi criado um **pipeline completo**, integrando:
 ### Treinamento
 O pipeline foi aplicado nos dados de treino, utilizando as **best_features** e os **parâmetros otimizados** pelo GridSearchCV.
 
-## Avaliação dos Modelos
-- Acurácia
-- ROC AUC
-- Curva ROC
-- Avaliação em treino, teste e OOT
+## 10. Avaliação dos Modelos
+### Métricas utilizadas
+- **Acurácia**: proporção de previsões corretas.
+- **AUC (Área sob a curva ROC)**: capacidade do modelo em separar classes.
+
+### Resultados
+
+| Modelo               | Acurácia Treino | AUC Treino | Acurácia Teste | AUC Teste | Acurácia OOT | AUC OOT |
+|-----------------------|-----------------|------------|----------------|-----------|--------------|---------|
+| Random Forest         | 0.942           | 0.991      | 0.943          | 0.951     | 0.535        | 0.781   |
+| Regressão Logística   | 0.948           | 0.869      | 0.941          | 0.794     | 0.633        | 0.700   |
+
+### Análise
+- O **Random Forest** apresentou excelente desempenho em treino e teste (acurácia ~0.94 e AUC ~0.95), mas sofreu uma queda brusca na acurácia no OOT (~0.53), embora tenha mantido AUC razoável (~0.78).  
+  Isso sugere **overfitting temporal**, ou seja, o modelo aprendeu muito bem padrões do período de treino/teste, mas não generalizou para dados futuros.  
+
+- A **Regressão Logística** teve desempenho inferior em treino/teste, mas mostrou maior estabilidade no OOT (acurácia ~0.63 e AUC ~0.70).
+Como o objetivo é garantir **capacidade preditiva temporal** e **estabilidade fora da amostra**, mesmo com menor poder discriminativo, o melhor modelo pra esse cenário é a **Regressão Logística**.
+
+### Curva ROC – Regressão Logística
+
+A curva ROC avalia o desempenho do modelo em diferentes limiares de decisão:
+
+- **Eixo X (1 - Especificidade > Taxa de Falsos Positivos):** mostra a proporção de clientes que **não são churn**, mas foram classificados como churn. Quanto mais à esquerda, melhor (menos falsos positivos).
+- **Eixo Y (Sensibilidade > Taxa de Verdadeiros Positivos):** mostra a proporção de clientes que **são churn** e foram corretamente identificados. Quanto mais alto, melhor (mais acertos).
+
+A linha pontilhada diagonal representa um classificador aleatório (AUC = 0.5).  
+Quanto mais a curva se afasta dessa linha em direção ao canto superior esquerdo, maior o poder discriminativo do modelo.
+
+No caso da regressão logística:
+- **Treino e Teste:** curvas altas, confirmando bom aprendizado e generalização.  
+- **OOT:** curva mais próxima da diagonal, com AUC ~0.70. Isso significa que, ao comparar aleatoriamente um cliente churn e um não churn, o modelo tem **70% de chance de atribuir maior probabilidade ao churn verdadeiro**.  
+Na prática, o modelo mantém capacidade preditiva fora da amostra, ainda que com menor precisão que nos dados históricos.
+
+## 11. Principais  Insights sobre o Churn
+
+O gráfico abaixo mostra as variáveis mais relevantes da regressão logística para explicar o churn.  
+A interpretação dos coeficientes indica os seguintes perfis:
+
+### 🔍 Insights
+
+- **Maior chance de churn**
+  - Tempo de relacionamento = **1 ano**
+  - Pedidos por ano relativo = **0 a 3**
+  - Categoria de compra preferida = **Laptops e acessórios**
+  - 
+**Perfil:** Clientes relativamente novos, com baixo engajamento (poucos pedidos) e foco em categorias de maior valor. São consumidores que ainda não consolidaram vínculo com a empresa e podem migrar facilmente para concorrentes.
+
+- **Menor chance de churn (não churn)**
+  - Tempo de relacionamento = **0 anos**
+  - Pedidos por ano relativo = **4 a 6**
+  - Nível da cidade = **3 (cidades pequenas ou menores)**
+**Perfil:** Clientes recém-adquiridos, mas já engajados com frequência de compras maior. Tendem a estar em cidades menores, onde a concorrência é menos intensa e o relacionamento com a marca se fortalece mais rápido.
+
+### Ações recomendadas
+
+- **Reduzir churn em clientes de risco**
+  - Criar campanhas de retenção específicas para clientes no **1º ano de relacionamento**.
+  - Usar os canais já existentes para reforçar relacionamento
+  - Benefícios exclusivos para clientes das cidades maiores (ex.: entregas mais rápidas, suporte premium)
+  - Incentivar aumento da frequência de compras (programas de pontos, descontos progressivos).
+  - Oferecer benefícios exclusivos em categorias de **laptops e acessórios** (ex.: garantia estendida, suporte premium).
 
 ## Serialização do Modelo
-- Salvamento do modelo
-- Salvamento das features
+Para disponibilizar o modelo num app interativo, foi necessário salvar tanto o pipeline treinado quanto as features utilizadas em formato serializado (`.pkl`).  
+Esse processo garante que o modelo possa ser carregado e executado diretamente na aplicação, sem precisar reprocessar ou re-treinar os dados.
 
 ## Aplicação Prática (Streamlit)
-(Como o modelo é utilizado na prática)
+
+Este projeto foi desenvolvido com foco em disponibilizar as informações de forma prática e acessível no dia dia das empresas.  
+Para isso, foi criado um **aplicativo em Streamlit** que permite visualizar e interagir com os resultados do modelo de churn.
+https://app-predicao-churn-ecommerce.streamlit.app/ (clique com o botão direito → Abrir em nova guia)
+
+###  Lista de clientes em tempo real
+- O app mostra uma **tabela com os clientes e suas respectivas probabilidades de churn**, acompanhada da **ação recomendada** para cada perfil.  
+- Essa lista pode ser facilmente integrada à rotina da equipe de **[ex.: marketing, atendimento, CRM]**, servindo como guia para execução das ações de retenção.  
+
+
+###  Simulação individual
+- Além da visão geral, o app oferece uma funcionalidade de **simulação individual**.  
+- Nela, é possível **inputar valores das variáveis** (tempo de relacionamento, pedidos por ano, categoria preferida, etc.) e obter  a **probabilidade de churn** para aquele perfil específico.  
+- Isso permite testar cenários e entender como diferentes características impactam o risco de churn.
+
+###  Uso no dia a dia
+- **Priorizar clientes de maior risco**: direcionar campanhas e esforços de retenção para quem tem maior probabilidade de churn.  
+- **Planejar ações personalizadas**: usar as recomendações do modelo para definir estratégias específicas por perfil.  
+- **Simular estratégias**: avaliar como mudanças no comportamento (ex.: aumento de pedidos por ano) podem reduzir o risco de churn.  
+- **Apoiar decisões rápidas**: fornecer à equipe uma ferramenta prática e visual, sem necessidade de conhecimento técnico em modelagem.
+
+## 12 Conclusão
+
+Este projeto mostrou a importância de aproveitar  melhor os dados já disponíveis **criando novas features** e aplicar **discretização** para melhorar a capacidade do modelo.  
+Mesmo sem adicionar novas fontes de informação, conseguimos aumentar o poder preditivo apenas com criatividade na forma de tratar e transformar os dados.
+
+No ambiente real, nem sempre teremos todas as informações à mão, mas com criatividade é possível extrair valor e aumentar o poder preditivo com o que temos.
+
+Também reforçamos a relevância de **comparar diferentes modelos de Machine Learning** e escolher o melhor com base em métricas consistentes, garantindo maior confiabilidade nos resultados.
+
+Por fim, o foco foi transformar todo esse processo em algo **prático para o dia a dia da empresa**. Para isso, desenvolvemos um **aplicativo em Streamlit** que apresenta a lista de clientes com suas probabilidades de churn e ações recomendadas, além de permitir simulações individuais. Assim, o modelo deixa de ser apenas uma análise técnica e passa a ser uma ferramenta útil para apoiar decisões estratégicas.
 
 ## Tecnologias Utilizadas
+
+- **Python** – linguagem principal para análise e modelagem.  
+- **Streamlit** – criação do aplicativo interativo para disponibilizar os resultados.  
+- **VS Code** – ambiente de desenvolvimento.
+
+###  Bibliotecas principais
+- **pandas** – manipulação e análise de dados.  
+- **numpy** – operações numéricas e vetoriais.  
+- **matplotlib / seaborn** – visualização de gráficos e insights.  
+- **scikit-learn** – modelagem e avaliação de algoritmos de Machine Learning.  
+  - `linear_model` – regressão logística.  
+  - `ensemble` – testes com modelos de conjunto.  
+  - `tree` – testes com árvores de decisão.  
+  - `pipeline` – organização do fluxo de pré-processamento e modelagem.  
+  - `SimpleImputer` – tratamento de valores ausentes.  
+- **feature-engine** – discretização e encoding de variáveis.
+
 
 
 
