@@ -129,17 +129,18 @@ Isso é importante porque:
 - **Evita viés**: se o treino tivesse muito mais casos de churn que o teste (ou vice‑versa), o modelo poderia aprender padrões artificiais.  
 - **Valida a estratificação**: confirma que a divisão preservou a distribuição da variável alvo assegurando que o modelo seja avaliado em condições próximas às reais.
 
-Resultados:
-- Taxa de churn geral: ~5,79%  
-- Taxa de churn treino: ~5,81%  
-- Taxa de churn teste: ~5,74%
-  
+**Resultados:**
+
+<p align="center">
+  <img src="img/Taxa de Churn por Conjunto.png" alt="Taxa de Churn por Conjunto" width="400"/>
+</p>
 As taxas são praticamente iguais, mostrando que o split foi bem sucedido e que o modelo será treinado e avaliado em bases comparáveis.
 
 
 #### Fluxograma separação dos dados
-
-
+<p align="center">
+  <img src="img/pipeline Estratégia de Validação.png" alt="Pipeline Estratégia de Validação.png" width="400"/>
+</p>
 
 ## 6. Análise Exploratória dos Dados (EDA)
 
@@ -152,8 +153,9 @@ Nesta etapa foram realizadas análises estatísticas e visuais para compreender 
 O grafico de barras abaixo mostra as principais variáveis numéricas com suas média por classe de churn e a razão relativa (`diff_rel`).
 Valores maiores que 1 indicam que a variável tende a ser maior em clientes **não churn**, enquanto valores menores que 1 indicam maior associação com **churn**.
 
-
-
+<p align="center">
+  <img src="img/dif_relativa_var_num.png" alt="Diferença Relativa " width="400"/>
+</p>
 
 **Insights principais:**
 - Clientes churn tendem a ter **menos dias desde o último pedido** e **menor tempo de relacionamento**.
@@ -163,8 +165,9 @@ Valores maiores que 1 indicam que a variável tende a ser maior em clientes **n�
 ### 6.2 Matriz de Correlação — Variáveis Numéricas
 - Objetivo: identificar relações fortes e possíveis redundâncias.
 
-IMAGEM
-
+<p align="center">
+  <img src="img/Heatmap de correlação entre variáveis numéricas.png" alt="Correlação " width="400"/>
+</p>
 
 **Insights principais da correlação:**
 - Algumas variáveis apresentam alta correlação entre si (ex.: Quantidade de Pedidos e Pedidos por Ano), indicando redundância.  
@@ -212,6 +215,11 @@ IMAGEM
 
 #### Fluxograma da preparação dos dados
 
+<p align="center">
+  <img src="img/o pipeline de preparação dos dados.png" alt="Pipeline Preparação dados " width="400"/>
+</p>
+
+
 ## 8. Seleção das Melhores Features
 
 Após a preparação dos dados, foi necessário selecionar as variáveis mais relevantes para o modelo de churn.  Essa etapa é importante pois é nela que reduz a dimensionalidade dos dados para manter apenas variáveis que realmente contribuem para a previsão.
@@ -230,8 +238,11 @@ Esse método tem como vantagens:
 4. Selecionamos as variáveis responsáveis por **95% da importância total**.  
 
 ### Resultado
-As variáveis selecionadas (best_features) representam o subconjunto mais relevante para explicar o churn, .
+As variáveis selecionadas (best_features) representam o subconjunto mais relevante para explicar o churn.
 
+<p align="center">
+  <img src="img/best_features.png" alt="Melhores Features " width="400"/>
+</p>
 
 ## 9 Random Forest
 
@@ -258,6 +269,12 @@ Foi criado um **pipeline** integrando o modelo Random Forest com o GridSearchCV,
 
 ### Treinamento
 O pipeline foi aplicado nos dados de treino, utilizando as **best_features** e os **parâmetros otimizados** pelo GridSearchCV.
+
+### Fluxograma Modelagem Random Forest com Hiperparâmetros
+
+<p align="center">
+  <img src="img/Fluxo de Modelagem Random Forest com Hiperparâmetros.png" alt="Fluxo de Modelagem Random Forest com Hiperparâmetros " width="400"/>
+</p>
 
 ## 10 Regressão Logística
 
@@ -287,6 +304,12 @@ Foi criado um **pipeline completo**, integrando:
 ### Treinamento
 O pipeline foi aplicado nos dados de treino, utilizando as **best_features** e os **parâmetros otimizados** pelo GridSearchCV.
 
+### Fluxograma Modelagem Regressão Logista com Discretização e Onehot e Hiperparâmetros
+
+<p align="center">
+  <img src="img/Fluxo de Modelagem Reg Logistica com Discretização onehot e  Hiperparâmetros.png" alt="Fluxograma Modelagem Regressão Logista com Discretização e Onehot e Hiperparâmetros " width="400"/>
+</p>
+
 ## 10. Avaliação dos Modelos
 ### Métricas utilizadas
 - **Acurácia**: proporção de previsões corretas.
@@ -310,6 +333,10 @@ Como o objetivo é garantir **capacidade preditiva temporal** e **estabilidade f
 
 A curva ROC avalia o desempenho do modelo em diferentes limiares de decisão:
 
+<p align="center">
+  <img src="img/Curva ROC – Regressão Logística.png" alt="Curva ROC - Regressão logistica " width="400"/>
+</p>
+
 - **Eixo X (1 - Especificidade > Taxa de Falsos Positivos):** mostra a proporção de clientes que **não são churn**, mas foram classificados como churn. Quanto mais à esquerda, melhor (menos falsos positivos).
 - **Eixo Y (Sensibilidade > Taxa de Verdadeiros Positivos):** mostra a proporção de clientes que **são churn** e foram corretamente identificados. Quanto mais alto, melhor (mais acertos).
 
@@ -324,6 +351,11 @@ Na prática, o modelo mantém capacidade preditiva fora da amostra, ainda que co
 ## 11. Principais  Insights sobre o Churn
 
 O gráfico abaixo mostra as variáveis mais relevantes da regressão logística para explicar o churn.  
+
+<p align="center">
+  <img src="img/importancia das features- reg logistica.png" alt="Principais variáveis " width="400"/>
+</p>
+
 A interpretação dos coeficientes indica os seguintes perfis:
 
 ### 🔍 Insights
@@ -362,13 +394,20 @@ https://app-predicao-churn-ecommerce.streamlit.app/ (clique com o botão direito
 
 ###  Lista de clientes em tempo real
 - O app mostra uma **tabela com os clientes e suas respectivas probabilidades de churn**, acompanhada da **ação recomendada** para cada perfil.  
-- Essa lista pode ser facilmente integrada à rotina da equipe de **[ex.: marketing, atendimento, CRM]**, servindo como guia para execução das ações de retenção.  
+- Essa lista pode ser facilmente integrada à rotina da equipe de **[ex.: marketing, atendimento, CRM]**, servindo como guia para execução das ações de retenção.
 
+<p align="center">
+  <img src="img/lista_clientes_probabilidade.png" alt="Lista Cliente & Probabilidade " width="400"/>
+</p>
 
 ###  Simulação individual
 - Além da visão geral, o app oferece uma funcionalidade de **simulação individual**.  
 - Nela, é possível **inputar valores das variáveis** (tempo de relacionamento, pedidos por ano, categoria preferida, etc.) e obter  a **probabilidade de churn** para aquele perfil específico.  
 - Isso permite testar cenários e entender como diferentes características impactam o risco de churn.
+
+<p align="center">
+  <img src="img/simulação individual.png" alt="Simulação Probabilidade Churn " width="400"/>
+</p>
 
 ###  Uso no dia a dia
 - **Priorizar clientes de maior risco**: direcionar campanhas e esforços de retenção para quem tem maior probabilidade de churn.  
@@ -404,6 +443,7 @@ Por fim, o foco foi transformar todo esse processo em algo **prático para o dia
   - `pipeline` – organização do fluxo de pré-processamento e modelagem.  
   - `SimpleImputer` – tratamento de valores ausentes.  
 - **feature-engine** – discretização e encoding de variáveis.
+
 
 
 
