@@ -1,7 +1,9 @@
 # Predição de Churn em E-commerce com Machine Learning
 <p align="left">
   <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54"/>
-  <img src="https://img.shields.io/badge/STATUS-EM%20ANDAMENTO-orange" alt="Status: Em Andamento"/>
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white"/>
+  <img src="https://img.shields.io/badge/status-concluído-brightgreen?style=for-the-badge" alt="Status: Concluído"/>
 </p>
 
 ## 1. Introdução
@@ -132,7 +134,7 @@ Isso é importante porque:
 **Resultados:**
 
 <p align="center">
-  <img src="img/Taxa de Churn por Conjunto.png" alt="Taxa de Churn por Conjunto" width="400"/>
+  <img src="img/Taxa de Churn por Conjunto.png" alt="Taxa de Churn por Conjunto" width="600"/>
 </p>
 As taxas são praticamente iguais, mostrando que o split foi bem sucedido e que o modelo será treinado e avaliado em bases comparáveis.
 
@@ -154,7 +156,7 @@ O grafico de barras abaixo mostra as principais variáveis numéricas com suas m
 Valores maiores que 1 indicam que a variável tende a ser maior em clientes **não churn**, enquanto valores menores que 1 indicam maior associação com **churn**.
 
 <p align="center">
-  <img src="img/dif_relativa_var_num.png" alt="Diferença Relativa " width="400"/>
+  <img src="img/dif_relativa_var_num.png" alt="Diferença Relativa " width="600"/>
 </p>
 
 **Insights principais:**
@@ -166,7 +168,7 @@ Valores maiores que 1 indicam que a variável tende a ser maior em clientes **n�
 - Objetivo: identificar relações fortes e possíveis redundâncias.
 
 <p align="center">
-  <img src="img/Heatmap de correlação entre variáveis numéricas.png" alt="Correlação " width="400"/>
+  <img src="img/Heatmap de correlação entre variáveis numéricas.png" alt="Correlação " width="600"/>
 </p>
 
 **Insights principais da correlação:**
@@ -216,7 +218,7 @@ Valores maiores que 1 indicam que a variável tende a ser maior em clientes **n�
 #### Fluxograma da preparação dos dados
 
 <p align="center">
-  <img src="img/o pipeline de preparação dos dados.png" alt="Pipeline Preparação dados " width="400"/>
+  <img src="img/o pipeline de preparação dos dados.png" alt="Pipeline Preparação dados " width="600"/>
 </p>
 
 
@@ -241,7 +243,7 @@ Esse método tem como vantagens:
 As variáveis selecionadas (best_features) representam o subconjunto mais relevante para explicar o churn.
 
 <p align="center">
-  <img src="img/best_features.png" alt="Melhores Features " width="400"/>
+  <img src="img/best_features.png" alt="Melhores Features " width="600"/>
 </p>
 
 ## 9 Random Forest
@@ -334,7 +336,7 @@ Como o objetivo é garantir **capacidade preditiva temporal** e **estabilidade f
 A curva ROC avalia o desempenho do modelo em diferentes limiares de decisão:
 
 <p align="center">
-  <img src="img/Curva ROC – Regressão Logística.png" alt="Curva ROC - Regressão logistica " width="400"/>
+  <img src="img/Curva ROC – Regressão Logística.png" alt="Curva ROC - Regressão logistica " width="600"/>
 </p>
 
 - **Eixo X (1 - Especificidade > Taxa de Falsos Positivos):** mostra a proporção de clientes que **não são churn**, mas foram classificados como churn. Quanto mais à esquerda, melhor (menos falsos positivos).
@@ -353,7 +355,7 @@ Na prática, o modelo mantém capacidade preditiva fora da amostra, ainda que co
 O gráfico abaixo mostra as variáveis mais relevantes da regressão logística para explicar o churn.  
 
 <p align="center">
-  <img src="img/importancia das features- reg logistica.png" alt="Principais variáveis " width="400"/>
+  <img src="img/importancia das features- reg logistica.png" alt="Principais variáveis " width="600"/>
 </p>
 
 A interpretação dos coeficientes indica os seguintes perfis:
@@ -397,7 +399,7 @@ https://app-predicao-churn-ecommerce.streamlit.app/ (clique com o botão direito
 - Essa lista pode ser facilmente integrada à rotina da equipe de **[ex.: marketing, atendimento, CRM]**, servindo como guia para execução das ações de retenção.
 
 <p align="center">
-  <img src="img/lista_clientes_probabilidade.png" alt="Lista Cliente & Probabilidade " width="400"/>
+  <img src="img/lista_clientes_probabilidade.png" alt="Lista Cliente & Probabilidade " width="600"/>
 </p>
 
 ###  Simulação individual
@@ -406,7 +408,7 @@ https://app-predicao-churn-ecommerce.streamlit.app/ (clique com o botão direito
 - Isso permite testar cenários e entender como diferentes características impactam o risco de churn.
 
 <p align="center">
-  <img src="img/simulação individual.png" alt="Simulação Probabilidade Churn " width="400"/>
+  <img src="img/simulação individual.png" alt="Simulação Probabilidade Churn " width="600"/>
 </p>
 
 ###  Uso no dia a dia
@@ -443,6 +445,7 @@ Por fim, o foco foi transformar todo esse processo em algo **prático para o dia
   - `pipeline` – organização do fluxo de pré-processamento e modelagem.  
   - `SimpleImputer` – tratamento de valores ausentes.  
 - **feature-engine** – discretização e encoding de variáveis.
+
 
 
 
