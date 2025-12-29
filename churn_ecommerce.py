@@ -57,6 +57,7 @@ missing_df = pd.DataFrame({
     '%vazios': (df.isnull().mean() * 100).round(2)
 }).sort_values('%vazios', ascending=False)
 
+missing_df
 
 # ============================================================
 # 5. Feature Engineering
@@ -160,6 +161,12 @@ summario_num['diff_rel'] = summario_num[0] / summario_num[1]
 
 # Ordena pelas mais discriminativas
 summario_num = summario_num.sort_values('diff_rel', ascending=False)
+
+# remove a mediana e mantém só a média como referência para o cálculo da diferença relativa
+diff_rel = summario_num.groupby(level=0)['diff_rel'].first()
+
+# Ordena valores
+sorted_diff = diff_rel.sort_values(ascending=False)
 
 # Gráfico de barras horizontal
 plt.figure(figsize=(12, 8))
@@ -341,7 +348,6 @@ ax2.legend(loc='lower right')
 plt.title('Gráfico de Pareto - Importância das Features')
 plt.tight_layout()
 plt.show()
-
 
 # %%
 # ============================================================
