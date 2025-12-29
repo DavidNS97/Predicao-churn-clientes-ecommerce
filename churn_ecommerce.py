@@ -15,6 +15,7 @@ from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import ensemble
 import numpy as np
+from sklearn import model_selection 
 
 
 # Configurações de visualização para análise exploratória
@@ -119,7 +120,6 @@ y = df_train[target]
 # Divisão com estratificação para manter a taxa de churn
 # equivalente entre treino e teste.
 
-from sklearn import model_selection 
 X_train, X_test, y_train, y_test = model_selection.train_test_split(
                                                                     X, y,
                                                                     random_state=42, 
@@ -229,6 +229,8 @@ df_oot  = df_oot.drop(columns=["ID do Cliente"])
 
 
 # Identifica colunas com missing (apenas colunas numericas possui missing)
+numericas = X_train.select_dtypes(include=['int64', 'float64']).columns
+
 colunas_numericas_com_missing = (
     X_train[numericas]
     .columns[X_train[numericas].isna().sum() > 0]
@@ -252,7 +254,7 @@ df_oot[colunas_numericas_com_missing] = imputer.transform(
 )
 
 # ============================================================
-# 15. One-Hot Encoding das variáveis categóricas
+# 15. Dummies Encoding das variáveis categóricas
 # ============================================================
 
 X_train = pd.get_dummies(X_train, columns=categoricas, drop_first=False)
@@ -302,11 +304,14 @@ best_features
 
 # %%
 # ============================================================
-# ETAPA 19 — Discretização (Binning) das Variáveis Numéricas
+# ETAPA 19 — PRÉ-PROCESSAMENTO PARA RANDOM FOREST
 # ============================================================
-# Discretiza variáveis numéricas relevantes usando árvore de decisão,
-# reduzindo sensibilidade a outliers e capturando padrões não lineares.
-
+# Discretização supervisionada + OneHot
+# ------------------------------------------------------------
+# Aqui tratamos variáveis numéricas relevantes usando árvore de decisão
+# para discretização, reduzindo sensibilidade a outliers e capturando
+# padrões não lineares.
+# ------------------------------------------------------------
 
 # ------------------------------------------------------------
 # Seleção das variáveis numéricas mais relevantes
@@ -344,9 +349,8 @@ onehot = encoding.OneHotEncoder(
 # %%
 
 # ------------------------------------------------------------
-# Definição do modelo e hiperparâmetros
+# Definição do modelo Random Forest
 # ------------------------------------------------------------
-
 
 model = ensemble.RandomForestClassifier(
             random_state=42,
@@ -383,6 +387,10 @@ model_pipeline = pipeline.Pipeline(
     ]
 )
 
+# ------------------------------------------------------------
+#Treinamento do Pipeline com Random Forest  + (Discretização + OneHot + GridSearchCV)
+# ------------------------------------------------------------
+
 model_pipeline.fit(X_train[best_features], y_train)
 
 # ------------------------------------------------------------
@@ -400,7 +408,7 @@ print(grid.best_params_)
 
 
 # ------------------------------------------------------------
-# Definição do modelo
+# Definição do modelo regressão logistica
 # ------------------------------------------------------------
 
 log_model = linear_model.LogisticRegression(
@@ -540,22 +548,29 @@ print("AUC OOT:", auc_oot)
 # Importância das features — Regressão Logística
 # ------------------------------------------------------------
 
-
 # Melhor modelo encontrado no grid
 best_log_model = log_pipeline.named_steps["Grid"].best_estimator_
-
+# %%
 # Coeficientes do modelo
 coef = best_log_model.coef_[0]
 
+# Gera a  features final (bins + dummies) exatamente como o modelo enxerga
+X_transformado = log_pipeline[:-1].transform(X_train[best_features])
+
+# Nomes das features finais
+feature_names = X_transformado.columns
+
+# Checagem de segurança
+assert len(feature_names) == len(coef), "Mismatch entre features e coeficientes"
+
 # Organização das importâncias
 importancia_features = pd.DataFrame({
-    "feature": features,
+    "feature": feature_names,
     "coeficiente": coef,
     "importancia_absoluta": np.abs(coef)
 }).sort_values("importancia_absoluta", ascending=False)
 
 importancia_features
-
 
 # %%
 # ============================================================

@@ -173,7 +173,7 @@ with exp1:
         Aumento_pedido =  st.number_input("% De aumento pedido vs ano anterior:",0,100)
         Satisfação =  st.number_input("Pontuação de Satisfação com serviço:",1,5)
         Cashback =  st.number_input("Valor médio (R$) de cashback no último mês:",0,400)
-        dias =  st.number_input("Dias desde o último pedido do cliente:",0,200)
+        dias =  st.number_input("Dias desde o último pedido:",0,200)
     with col3:
         pedido_preferido =  st.selectbox("Categoria de pedido preferida do cliente no último mês:",pedido_preferido_opp)
         meio_pagamento= st.selectbox("Método de pagamento preferido :",metodo_pagamento_opp)
