@@ -619,11 +619,11 @@ plt.axvline(0, color='black', linewidth=1)
 plt.xlabel("Coeficiente")
 plt.title("Importância das Features - Regressão Logística")
 plt.gca().invert_yaxis()  # Garante que a mais importante fique no topo
-plt.show()
 # Legenda para cores 
 plt.legend(handles=[ plt.Rectangle((0,0),1,1,color="seagreen", label="Aumenta prob. Churn"), 
 plt.Rectangle((0,0),1,1,color="tomato", label="Reduz prob. chunr") ], 
 loc="lower right")
+plt.show()
 
 # %%
 # ============================================================
