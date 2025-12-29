@@ -3,7 +3,6 @@
 # Leia o README.md para explicação do projeto
 # ------------------------------------------------------------
 
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -16,6 +15,8 @@ from sklearn import naive_bayes
 from sklearn import ensemble
 import numpy as np
 from sklearn import model_selection 
+from sklearn import metrics
+
 
 
 # Configurações de visualização para análise exploratória
@@ -160,7 +161,19 @@ summario_num['diff_rel'] = summario_num[0] / summario_num[1]
 # Ordena pelas mais discriminativas
 summario_num = summario_num.sort_values('diff_rel', ascending=False)
 
-summario_num
+# Gráfico de barras horizontal
+plt.figure(figsize=(12, 8))
+sns.barplot(x=sorted_diff.values, y=sorted_diff.index, palette='coolwarm_r')
+
+# Linha de referência em 1.0 (neutro)
+plt.axvline(1.0, color='black', linestyle='--', linewidth=1)
+
+plt.title('Diferença Relativa (Não Churn / Churn) por Variável Numérica', fontsize=14)
+plt.xlabel('diff_rel')
+plt.ylabel('Variável')
+plt.tight_layout()
+plt.show()
+
 # ============================================================
 # 11. Matriz de Correlação — Variáveis Numéricas
 # ============================================================
@@ -299,57 +312,44 @@ best_features = features_importances[
     features_importances['importance_acumulada'] < 0.96
 ]['feature'].tolist()
 
-best_features
+#Grafico de Pareto - 95% variaveis mais importantes
+# Ordena as features pela importância (decrescente)
+features_importances = features_importances.sort_values(by='importance', ascending=False)
+
+# Dados
+features = features_importances['feature']
+importances = features_importances['importance']
+importances_acumuladas = features_importances['importance_acumulada']
+
+# Cria a figura
+fig, ax1 = plt.subplots(figsize=(12,6))
+
+# Gráfico de barras (importância individual)
+ax1.bar(features, importances, color='steelblue')
+ax1.set_ylabel('Importância (%)')
+ax1.set_xticklabels(features, rotation=90)
+
+# Cria eixo secundário para a linha acumulada
+ax2 = ax1.twinx()
+ax2.plot(features, importances_acumuladas, color='red', marker='o', linestyle='-')
+ax2.set_ylabel('Importância Acumulada')
+
+# Linha de corte em 95%
+ax2.axhline(0.95, color='green', linestyle='--', label='Corte 95%')
+ax2.legend(loc='lower right')
+
+plt.title('Gráfico de Pareto - Importância das Features')
+plt.tight_layout()
+plt.show()
 
 
 # %%
 # ============================================================
-# ETAPA 19 — PRÉ-PROCESSAMENTO PARA RANDOM FOREST
+# ETAPA 19 —  RANDOM FOREST
 # ============================================================
-# Discretização supervisionada + OneHot
-# ------------------------------------------------------------
-# Aqui tratamos variáveis numéricas relevantes usando árvore de decisão
-# para discretização, reduzindo sensibilidade a outliers e capturando
-# padrões não lineares.
-# ------------------------------------------------------------
 
 # ------------------------------------------------------------
-# Seleção das variáveis numéricas mais relevantes
-# ------------------------------------------------------------
-
-best_features_numericas = [
-    col for col in best_features if col in numericas
-]
-
-best_features_numericas
-# %%
-
-
-# ------------------------------------------------------------
-# Discretização supervisionada
-# ------------------------------------------------------------
-
-tree_discretization = discretisation.DecisionTreeDiscretiser(
-                        variables=best_features_numericas,
-                        regression=False,
-                        bin_output='bin_number',
-                        cv=3
-)
-# %%
-
-
-# ------------------------------------------------------------
-# One-Hot Encoding dos bins
-# ------------------------------------------------------------
-
-onehot = encoding.OneHotEncoder(
-            variables=best_features_numericas,
-            ignore_format=True
-)
-# %%
-
-# ------------------------------------------------------------
-# Definição do modelo Random Forest
+# Definição do modelo Random Forest e Hiperparametros
 # ------------------------------------------------------------
 
 model = ensemble.RandomForestClassifier(
@@ -381,14 +381,12 @@ grid = model_selection.GridSearchCV(
 
 model_pipeline = pipeline.Pipeline(
     steps=[
-        ("Discretizar", tree_discretization),
-        ("onehot", onehot),
         ("Grid", grid)
     ]
 )
 
 # ------------------------------------------------------------
-#Treinamento do Pipeline com Random Forest  + (Discretização + OneHot + GridSearchCV)
+#Treinamento do Pipeline com Random Forest  +  GridSearchCV
 # ------------------------------------------------------------
 
 model_pipeline.fit(X_train[best_features], y_train)
@@ -405,6 +403,44 @@ print(grid.best_params_)
 # ============================================================
 # Modelo linear para classificação binária, usado como baseline
 # e comparação com modelos não lineares.
+
+
+# Discretização supervisionada + OneHot
+# ------------------------------------------------------------
+# Aqui tratamos variáveis numéricas relevantes usando árvore de decisão
+# para discretização (faixa de valores), reduzindo sensibilidade a outliers e capturando
+# padrões não lineares.
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# Seleção das variáveis numéricas mais relevantes
+# ------------------------------------------------------------
+
+best_features_numericas = [
+    col for col in best_features if col in numericas
+]
+
+# ------------------------------------------------------------
+# Discretização supervisionada
+# ------------------------------------------------------------
+
+tree_discretization = discretisation.DecisionTreeDiscretiser(
+                        variables=best_features_numericas,
+                        regression=False,
+                        bin_output='bin_number',
+                        cv=3
+)
+
+
+# ------------------------------------------------------------
+# One-Hot Encoding dos bins
+# ------------------------------------------------------------
+
+onehot = encoding.OneHotEncoder(
+            variables=best_features_numericas,
+            ignore_format=True
+)
+# %%
 
 
 # ------------------------------------------------------------
@@ -466,7 +502,6 @@ print(log_grid.best_params_)
 # ETAPA 21 — AVALIAÇÃO DOS MODELOS
 # ============================================================
 
-from sklearn import metrics
 
 # ------------------------------------------------------------
 # Avaliação — Random Forest (Pipeline principal)
@@ -480,10 +515,6 @@ acc_train = metrics.accuracy_score(y_train, y_train_predict)
 auc_train = metrics.roc_auc_score(y_train, y_train_proba)
 roc_train = metrics.roc_curve(y_train, y_train_proba)
 
-print("Acurácia treino:", acc_train)
-print("AUC treino:", auc_train)
-
-# %%
 # Teste
 y_test_predict = model_pipeline.predict(X_test[best_features])
 y_test_proba   = model_pipeline.predict_proba(X_test[best_features])[:,1]
@@ -492,10 +523,7 @@ acc_test = metrics.accuracy_score(y_test, y_test_predict)
 auc_test = metrics.roc_auc_score(y_test, y_test_proba)
 roc_test = metrics.roc_curve(y_test, y_test_proba)
 
-print("Acurácia teste:", acc_test)
-print("AUC teste:", auc_test)
 
-# %%
 # OOT (base futura)
 y_oot_predict = model_pipeline.predict(df_oot[best_features])
 y_oot_proba   = model_pipeline.predict_proba(df_oot[best_features])[:,1]
@@ -503,6 +531,10 @@ y_oot_proba   = model_pipeline.predict_proba(df_oot[best_features])[:,1]
 acc_oot = metrics.accuracy_score(df_oot[target], y_oot_predict)
 auc_oot = metrics.roc_auc_score(df_oot[target], y_oot_proba)
 roc_oot = metrics.roc_curve(df_oot[target], y_oot_proba)
+print("Acurácia treino:", acc_train)
+print("AUC treino:", auc_train)
+print("Acurácia teste:", acc_test)
+print("AUC teste:", auc_test)
 
 print("Acurácia OOT:", acc_oot)
 print("AUC OOT:", auc_oot)
@@ -548,29 +580,44 @@ print("AUC OOT:", auc_oot)
 # Importância das features — Regressão Logística
 # ------------------------------------------------------------
 
-# Melhor modelo encontrado no grid
+#  Extração do melhor modelo e coeficientes
 best_log_model = log_pipeline.named_steps["Grid"].best_estimator_
-# %%
-# Coeficientes do modelo
 coef = best_log_model.coef_[0]
 
-# Gera a  features final (bins + dummies) exatamente como o modelo enxerga
+# Transformação dos dados para alinhar com o modelo (bins + dummies)
 X_transformado = log_pipeline[:-1].transform(X_train[best_features])
-
-# Nomes das features finais
 feature_names = X_transformado.columns
 
-# Checagem de segurança
+#  Validação de integridade
 assert len(feature_names) == len(coef), "Mismatch entre features e coeficientes"
 
-# Organização das importâncias
+# Organização das importâncias em DataFrame
 importancia_features = pd.DataFrame({
     "feature": feature_names,
     "coeficiente": coef,
     "importancia_absoluta": np.abs(coef)
 }).sort_values("importancia_absoluta", ascending=False)
 
-importancia_features
+#  Seleção das top 20 para visualização
+top_features = importancia_features.head(20)
+
+# Configuração e plotagem do gráfico
+plt.figure(figsize=(8, 6))
+
+# Cores condicionais: Verde para impacto positivo, Vermelho para negativo
+colors = ["seagreen" if c > 0 else "tomato" for c in top_features["coeficiente"]]
+
+plt.barh(top_features["feature"], top_features["coeficiente"], color=colors)
+plt.axvline(0, color='black', linewidth=1)
+
+plt.xlabel("Coeficiente")
+plt.title("Importância das Features - Regressão Logística")
+plt.gca().invert_yaxis()  # Garante que a mais importante fique no topo
+plt.show()
+# Legenda para cores 
+plt.legend(handles=[ plt.Rectangle((0,0),1,1,color="seagreen", label="Aumenta prob. Churn"), 
+plt.Rectangle((0,0),1,1,color="tomato", label="Reduz prob. chunr") ], 
+loc="lower right")
 
 # %%
 # ============================================================
